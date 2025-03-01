@@ -47,3 +47,27 @@ $ make generate
 $ make manifests
 /Users/vishal/workspace/vishalanarase/memcached-operator/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 ```
+
+## Deploy the controller to the cluster
+
+```bash
+$ make deploy
+/Users/vishal/workspace/vishalanarase/memcached-operator/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+Downloading sigs.k8s.io/kustomize/kustomize/v5@v5.4.3
+cd config/manager && /Users/vishal/workspace/vishalanarase/memcached-operator/bin/kustomize edit set image controller=vishalanarase/memcached-operator:0.0.1
+/Users/vishal/workspace/vishalanarase/memcached-operator/bin/kustomize build config/default | kubectl apply -f -
+namespace/memcached-operator-system created
+customresourcedefinition.apiextensions.k8s.io/memcacheds.cache.devspace.com created
+serviceaccount/memcached-operator-controller-manager created
+role.rbac.authorization.k8s.io/memcached-operator-leader-election-role created
+clusterrole.rbac.authorization.k8s.io/memcached-operator-manager-role created
+clusterrole.rbac.authorization.k8s.io/memcached-operator-memcached-editor-role created
+clusterrole.rbac.authorization.k8s.io/memcached-operator-memcached-viewer-role created
+clusterrole.rbac.authorization.k8s.io/memcached-operator-metrics-auth-role created
+clusterrole.rbac.authorization.k8s.io/memcached-operator-metrics-reader created
+rolebinding.rbac.authorization.k8s.io/memcached-operator-leader-election-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/memcached-operator-manager-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/memcached-operator-metrics-auth-rolebinding created
+service/memcached-operator-controller-manager-metrics-service created
+deployment.apps/memcached-operator-controller-manager created
+```
