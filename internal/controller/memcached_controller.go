@@ -53,13 +53,14 @@ type MemcachedReconciler struct {
 // move the current state of the cluster closer to the desired state.
 func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := log.FromContext(ctx)
+	log.Info("Starting reconciling for Memcached")
 
 	// Get the Memcached resource
 	memcached := &cachev1.Memcached{}
 	err := r.Get(ctx, req.NamespacedName, memcached)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			log.Info("Memcached resource not found. Ignoring since object must be deleted")
+			log.Info("Memcached resource not found. ignoring since object must be deleted")
 			return ctrl.Result{}, nil
 		}
 		log.Error(err, "Failed to get Memcached")
@@ -112,6 +113,20 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return r.UpdateDeployment(ctx, memcached, found)
 	}
 
+	// Set the condition as Available
+	meta.SetStatusCondition(&memcached.Status.Conditions, metav1.Condition{
+		Type:    cachev1.ConditionReady,
+		Status:  metav1.ConditionTrue,
+		Reason:  "Reconciled",
+		Message: "Deployment for custom resource created successfully",
+	})
+
+	if err := r.Status().Update(ctx, memcached); err != nil {
+		log.Error(err, "Failed to update Memcached status")
+		return ctrl.Result{}, err
+	}
+
+	log.Info("Successfully Reconciled Memcached")
 	return ctrl.Result{}, nil
 }
 
