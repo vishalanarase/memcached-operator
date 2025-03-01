@@ -78,8 +78,7 @@ func labelsForMemcached(name string) map[string]string {
 	return map[string]string{"app": "memcached", "memcached_cr": name}
 }
 
-//updateDeployment updates the deployment with the given Memcached object
-
+// updateDeployment updates the deployment with the given Memcached object
 func (r *MemcachedReconciler) UpdateDeployment(ctx context.Context, memcached *cachev1.Memcached, found *appsv1.Deployment) (ctrl.Result, error) {
 	log := log.FromContext(ctx)
 	size := memcached.Spec.Size
@@ -112,4 +111,13 @@ func (r *MemcachedReconciler) UpdateDeployment(ctx context.Context, memcached *c
 	}
 
 	return ctrl.Result{}, nil
+}
+
+// getPodNames returns the pod names of the array of pods passed in
+func getPodNames(pods []corev1.Pod) []string {
+	var podNames []string
+	for _, pod := range pods {
+		podNames = append(podNames, pod.Name)
+	}
+	return podNames
 }

@@ -40,6 +40,9 @@ type MemcachedSpec struct {
 
 // MemcachedStatus defines the observed state of Memcached
 type MemcachedStatus struct {
+	// Nodes are the names of the memcached pods
+	Nodes []string `json:"nodes"`
+
 	// Conditions store the status conditions of the Memcached instances
 	Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 }
