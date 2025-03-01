@@ -22,6 +22,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -96,6 +97,19 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 			log.Error(err, "Failed to update Memcached with finalizer")
 			return ctrl.Result{}, err
 		}
+	}
+
+	// Check if the deployment already exists, if not create a new one
+	found := &appsv1.Deployment{}
+	err = r.Get(ctx, types.NamespacedName{Name: memcached.Name, Namespace: memcached.Namespace}, found)
+	if err != nil && errors.IsNotFound(err) {
+		return ctrl.Result{}, r.CreateDeployment(ctx, memcached)
+	}
+
+	// Ensure the deployment size is the same as the spec
+	size := memcached.Spec.Size
+	if *found.Spec.Replicas != size {
+		return r.UpdateDeployment(ctx, memcached, found)
 	}
 
 	return ctrl.Result{}, nil
