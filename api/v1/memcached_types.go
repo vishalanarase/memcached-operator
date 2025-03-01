@@ -20,10 +20,22 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// ConditionReady is the condition type for the Ready condition
+const (
+	ConditionReady       = "Ready"
+	ConditionAvailable   = "Available"
+	ConditionDegraded    = "Degraded"
+	ConditionDowngraded  = "Downgraded"
+	ConditionProgressing = "Progressing"
+)
+
+// MemcachedFinalizer is the name of the finalizer
+const MemcachedFinalizer = "cache.devspace.com/finalizer"
+
 // MemcachedSpec defines the desired state of Memcached
 type MemcachedSpec struct {
 	// Size is the size of the memcached deployment
-	Size int `json:"size"`
+	Size int32 `json:"size"`
 }
 
 // MemcachedStatus defines the observed state of Memcached

@@ -51,6 +51,7 @@ spec:
             properties:
               size:
                 description: Size is the size of the memcached deployment
+                format: int32
                 type: integer
             required:
             - size

@@ -75,7 +75,7 @@ func (r *Memcached) ValidateDelete() (admission.Warnings, error) {
 	return nil, nil
 }
 
-func (r *Memcached) validateOdd(n int) error {
+func (r *Memcached) validateOdd(n int32) error {
 	if n%2 == 0 {
 		log.Error(errors.New("cluster size must be an odd number"), "validation failed", "name", r.Name, "namespace", r.Namespace)
 		return errors.New("cluster size must be an odd number")
