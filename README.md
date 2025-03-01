@@ -38,4 +38,12 @@ Next: implement your new API and generate the manifests (e.g. CRDs,CRs) with:
 $ make manifests
 ```
 
-## Generate CRDs and CRs
+## Generate CRDs and RBAC manifests
+
+```bash
+$ make generate
+/Users/vishal/workspace/vishalanarase/memcached-operator/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
+
+$ make manifests
+/Users/vishal/workspace/vishalanarase/memcached-operator/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+```
