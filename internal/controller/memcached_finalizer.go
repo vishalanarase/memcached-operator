@@ -21,7 +21,7 @@ func (r *MemcachedReconciler) RemoveFinalizer(ctx context.Context, memcached *ca
 		Type:               cachev1.ConditionDowngraded,
 		Status:             metav1.ConditionUnknown,
 		Reason:             "Finalizing",
-		Message:            fmt.Sprintf("Performing finalizer operations before delete"),
+		Message:            "Performing finalizer operations before delete",
 		ObservedGeneration: memcached.Generation,
 	})
 	if err := r.Status().Update(ctx, memcached); err != nil {
@@ -43,7 +43,7 @@ func (r *MemcachedReconciler) RemoveFinalizer(ctx context.Context, memcached *ca
 		Type:               cachev1.ConditionDegraded,
 		Status:             metav1.ConditionTrue,
 		Reason:             "Finalized",
-		Message:            fmt.Sprintf("Finalizer operations complete"),
+		Message:            "Finalizer operations complete",
 		ObservedGeneration: memcached.Generation,
 	})
 	if err := r.Status().Update(ctx, memcached); err != nil {
