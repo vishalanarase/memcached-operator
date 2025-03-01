@@ -90,9 +90,15 @@ Next: implement your new Webhook and generate the manifests with:
 $ make manifests
 ```
 
+- Uncommenting sections in `config/default/kustomization.yaml` to enable webhook and cert-manager configuration through kustomize.
+
 ## Generate the manifests
 
 ```bash
 make manifests
 /Users/vishal/workspace/vishalanarase/memcached-operator/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 ```
+
+## Install the Cert Manager if you don't have it already
+
+From [here](https://cert-manager.io/docs/installation/)
