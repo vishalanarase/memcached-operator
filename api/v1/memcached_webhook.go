@@ -21,13 +21,13 @@ import (
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
-	logf "sigs.k8s.io/controller-runtime/pkg/log"
+	rplog "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
 // log is for logging in this package.
-var memcachedlog = logf.Log.WithName("memcached-resource")
+var log = rplog.Log.WithName("memcached-resource.webhook")
 
 // SetupWebhookWithManager will setup the manager to manage the webhooks
 func (r *Memcached) SetupWebhookWithManager(mgr ctrl.Manager) error {
@@ -42,9 +42,10 @@ var _ webhook.Defaulter = &Memcached{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
 func (r *Memcached) Default() {
-	memcachedlog.Info("default", "name", r.Name)
+	log.Info("default", "name", r.Name, "namespace", r.Namespace)
 
 	if r.Spec.Size == 0 {
+		log.Info("cr does not have size, defaulting to 3", "name", r.Name, "namespace", r.Namespace)
 		r.Spec.Size = 3
 	}
 }
@@ -55,27 +56,28 @@ var _ webhook.Validator = &Memcached{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
 func (r *Memcached) ValidateCreate() (admission.Warnings, error) {
-	memcachedlog.Info("validate create", "name", r.Name)
+	log.Info("validate create", "name", r.Name, "namespace", r.Namespace)
 
-	return nil, validateOdd(r.Spec.Size)
+	return nil, r.validateOdd(r.Spec.Size)
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
 func (r *Memcached) ValidateUpdate(old runtime.Object) (admission.Warnings, error) {
-	memcachedlog.Info("validate update", "name", r.Name)
+	log.Info("validate update", "name", r.Name, "namespace", r.Namespace)
 
-	return nil, validateOdd(r.Spec.Size)
+	return nil, r.validateOdd(r.Spec.Size)
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
 func (r *Memcached) ValidateDelete() (admission.Warnings, error) {
-	memcachedlog.Info("validate delete", "name", r.Name)
+	log.Info("validate delete", "name", r.Name, "namespace", r.Namespace)
 
 	return nil, nil
 }
 
-func validateOdd(n int) error {
+func (r *Memcached) validateOdd(n int) error {
 	if n%2 == 0 {
+		log.Error(errors.New("cluster size must be an odd number"), "validation failed", "name", r.Name, "namespace", r.Namespace)
 		return errors.New("cluster size must be an odd number")
 	}
 	return nil
