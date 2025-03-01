@@ -89,3 +89,10 @@ $ make generate
 Next: implement your new Webhook and generate the manifests with:
 $ make manifests
 ```
+
+## Generate the manifests
+
+```bash
+make manifests
+/Users/vishal/workspace/vishalanarase/memcached-operator/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+```
