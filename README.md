@@ -71,3 +71,21 @@ clusterrolebinding.rbac.authorization.k8s.io/memcached-operator-metrics-auth-rol
 service/memcached-operator-controller-manager-metrics-service created
 deployment.apps/memcached-operator-controller-manager created
 ```
+
+## Admission Webhooks
+
+```bash
+$ operator-sdk create webhook --group cache --version v1 --kind Memcached --defaulting --programmatic-validation
+INFO[0000] Writing kustomize manifests for you to edit...
+INFO[0000] Writing scaffold for you to edit...
+INFO[0000] api/v1/memcached_webhook.go
+INFO[0000] api/v1/memcached_webhook_test.go
+INFO[0000] api/v1/webhook_suite_test.go
+INFO[0003] Update dependencies:
+$ go mod tidy
+INFO[0003] Running make:
+$ make generate
+/Users/vishal/workspace/vishalanarase/memcached-operator/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
+Next: implement your new Webhook and generate the manifests with:
+$ make manifests
+```
