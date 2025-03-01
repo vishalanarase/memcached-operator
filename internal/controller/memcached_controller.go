@@ -19,15 +19,19 @@ package controller
 import (
 	"context"
 
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	cachev1 "github.com/vishalanarase/memcached-operator/api/v1"
 	appsv1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // MemcachedReconciler reconciles a Memcached object
@@ -47,9 +51,52 @@ type MemcachedReconciler struct {
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
 func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	// Get the Memcached resource
+	memcached := &cachev1.Memcached{}
+	err := r.Get(ctx, req.NamespacedName, memcached)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			log.Info("Memcached resource not found. Ignoring since object must be deleted")
+			return ctrl.Result{}, nil
+		}
+		log.Error(err, "Failed to get Memcached")
+		return ctrl.Result{}, err
+	}
+
+	// Let's just set the status as Unknown when no status is available
+	if memcached.Status.Conditions == nil {
+		meta.SetStatusCondition(&memcached.Status.Conditions, metav1.Condition{
+			Type:               cachev1.ConditionReady,
+			Status:             metav1.ConditionUnknown,
+			Reason:             "Reconciling",
+			Message:            "Starting reconciliation",
+			ObservedGeneration: memcached.Generation,
+		})
+	}
+
+	// Check if the Memcached resource is being deleted
+	if !memcached.ObjectMeta.DeletionTimestamp.IsZero() {
+		if controllerutil.ContainsFinalizer(memcached, cachev1.MemcachedFinalizer) {
+			log.Info("Performing finalizer operations for Memcached before delete")
+			return r.RemoveFinalizer(ctx, memcached)
+		}
+	}
+
+	// Add finalizer for this CR
+	if !controllerutil.ContainsFinalizer(memcached, cachev1.MemcachedFinalizer) {
+		log.Info("Adding Finalizer for Memcached")
+		if ok := controllerutil.AddFinalizer(memcached, cachev1.MemcachedFinalizer); !ok {
+			log.Error(err, "Failed to add finalizer into the custom resource")
+			return ctrl.Result{Requeue: true}, nil
+		}
+
+		if err := r.Update(ctx, memcached); err != nil {
+			log.Error(err, "Failed to update Memcached with finalizer")
+			return ctrl.Result{}, err
+		}
+	}
 
 	return ctrl.Result{}, nil
 }
