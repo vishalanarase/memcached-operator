@@ -1,6 +1,6 @@
 # 🚀 **Memcached Operator**
 
-> This project implements a Kubernetes operator for managing Memcached instances. The operator automates the deployment, scaling, and management of Memcached clusters in a Kubernetes environment.
+> This project implements a Kubernetes operator for managing Memcached instances. The operator automates the deployment, scaling, and management of Memcached clusters in a Kubernetes environment. It leverages the Operator SDK to create admission webhooks for validating and mutating custom resources.
 
 ![Memcached Operator](./docs/images/mem-op.jpg)
 
