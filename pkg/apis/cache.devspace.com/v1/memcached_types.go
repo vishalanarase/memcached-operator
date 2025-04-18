@@ -47,12 +47,8 @@ type MemcachedStatus struct {
 	Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 }
 
-// +kubebuilder:object:root=true
-// +kubebuilder:storageversion
-// +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name="Size",type="integer",JSONPath=".spec.size"
-// +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
-// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+// +genclient
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // Memcached is the Schema for the memcacheds API
 type Memcached struct {
@@ -63,15 +59,11 @@ type Memcached struct {
 	Status MemcachedStatus `json:"status,omitempty"`
 }
 
-// +kubebuilder:object:root=true
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // MemcachedList contains a list of Memcached
 type MemcachedList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []Memcached `json:"items"`
-}
-
-func init() {
-	SchemeBuilder.Register(&Memcached{}, &MemcachedList{})
 }
