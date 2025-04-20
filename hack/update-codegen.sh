@@ -9,6 +9,8 @@ set -o pipefail
 
 PKG_ROOT=$(realpath "$(dirname ${BASH_SOURCE[0]})/..")
 
+ROOT=github.com/vishalanarase/memcached-operator
+
 CODEGEN_PKG=/Users/vishal/worktest/code-generator
 
 cd $PKG_ROOT
@@ -31,12 +33,12 @@ trap "rm github.com && rm vishalanarase" EXIT
 
 kube::codegen::gen_helpers \
   --boilerplate /dev/null \
-  github.com/vishalanarase/memcached-operator/pkg/apis
+  ${ROOT}/pkg/apis
 
 kube::codegen::gen_client \
-  --output-pkg github.com/vishalanarase/memcached-operator/pkg/generated \
+  --output-pkg ${ROOT}/pkg/generated \
   --boilerplate /dev/null \
-  --output-dir github.com/vishalanarase/memcached-operator/pkg/generated \
+  --output-dir ${ROOT}/pkg/generated \
   --with-watch \
   --with-applyconfig \
-  github.com/vishalanarase/memcached-operator/pkg/apis \
+  ${ROOT}/pkg/apis \
