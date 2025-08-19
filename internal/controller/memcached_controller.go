@@ -78,6 +78,11 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 			Message:            "Starting reconciliation",
 			ObservedGeneration: memcached.Generation,
 		})
+
+		if err := r.Status().Update(ctx, memcached); err != nil {
+			log.Error(err, "Failed to update Memcached status")
+			return ctrl.Result{}, err
+		}
 	}
 
 	// Check if the Memcached resource is being deleted
