@@ -99,7 +99,7 @@ func (r *MemcachedReconciler) UpdateDeployment(ctx context.Context, memcached *c
 			Type:    cachev1.ConditionAvailable,
 			Status:  metav1.ConditionFalse,
 			Reason:  "Resizing",
-			Message: fmt.Sprintf("Failed to update the size for the custom resource (%s): (%s)", memcached.Name, err),
+			Message: fmt.Sprintf("Updating the size for the custom resource (%s): (%s)", memcached.Name, err),
 		})
 
 		if err := r.Status().Update(ctx, memcached); err != nil {
